@@ -1,0 +1,40 @@
+import pandas as pd
+import numpy as np
+from sklearn.linear_model import LinearRegression
+from sklearn.model_selection import train_test_split
+
+# Sample historical price data (simulated)
+data = {
+    'BTC': [30000, 32000, 31000, 33000, 35000],
+    'ETH': [2000, 2100, 2050, 2200, 2300],
+    'LTC': [100, 105, 102, 110, 115]
+}
+
+df = pd.DataFrame(data)
+
+# Calculate daily returns
+returns = df.pct_change().dropna()
+
+# Portfolio allocations
+portfolio_A = returns.dot([0.5, 0.3, 0.2])
+portfolio_B = returns.dot([0.3, 0.5, 0.2])
+portfolio_C = returns.dot([0.4, 0.4, 0.2])
+
+portfolios = pd.DataFrame({
+    'Portfolio_A': portfolio_A,
+    'Portfolio_B': portfolio_B,
+    'Portfolio_C': portfolio_C
+})
+
+# Prepare data for ML model
+X = np.arange(len(portfolios)).reshape(-1, 1)
+y = portfolios.mean(axis=1)
+
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2)
+
+model = LinearRegression()
+model.fit(X_train, y_train)
+
+predicted_values = model.predict(X)
+
+print("Predicted Portfolio Performance:", predicted_values)
