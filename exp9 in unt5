@@ -1,0 +1,32 @@
+import numpy as np
+
+states = [(d, s) for d in range(3) for s in range(3)]
+actions = ['renewable', 'storage', 'grid']
+
+Q = np.zeros((len(states), len(actions)))
+alpha = 0.1
+gamma = 0.9
+epsilon = 0.2
+
+def reward(action):
+    if action == 'renewable':
+        return 5
+    elif action == 'storage':
+        return 2
+    else:
+        return -5
+
+for episode in range(1000):
+    state = np.random.randint(0, len(states))
+    for step in range(10):
+        if np.random.rand() < epsilon:
+            action = np.random.randint(0, len(actions))
+        else:
+            action = np.argmax(Q[state])
+        r = reward(actions[action])
+        next_state = np.random.randint(0, len(states))
+        Q[state, action] += alpha * (r + gamma * np.max(Q[next_state]) - Q[state, action])
+        state = next_state
+
+print("Learned Q-table:")
+print(Q)
